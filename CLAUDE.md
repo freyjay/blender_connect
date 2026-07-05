@@ -1,6 +1,6 @@
 # blender_connect
 
-Clean, focused memory file for blender_connect - A new project.
+Clean, focused memory file for blender_connect -- AI-agent senses & tooling for Blender over MCP (math-first vision, see tasks/blueprint.md).
 
 ## config/
 ### commands.md
