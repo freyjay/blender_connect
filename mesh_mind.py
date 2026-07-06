@@ -14,7 +14,7 @@ def declare_graph():
     hair = [o.name for o in bpy.data.objects if o.name.startswith(("Hair_", "HairS_", "HairHero_"))]
     return {
         "skin":  {"continuity": "fuse", "members": ["Cranium", "Face", "Jaw", "CheekL", "CheekR",
-                                                     "Nose", "LipUp", "EarL", "EarR", "Neck"]},
+                                                     "Nose", "LipUp", "EarL", "EarR", "Neck", "JawBlend"]},
         "eyes":  {"continuity": "separate", "members": ["EyeL", "EyeR"]},
         "eye_deco": {"continuity": "separate", "rides_on": "eyes",
                      "members": ["IrisL", "IrisR", "PupilL", "PupilR"]},

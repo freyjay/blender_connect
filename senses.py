@@ -221,3 +221,21 @@ def cavity_probe(center=(0.0, 0.0), rim_radius=0.7, rim_z=2.1, n=14, frame=None)
     return {"holds_liquid": mx > 0.3, "max_depth": round(mx, 2),
             "mean_depth": round(sum(depths) / len(depths), 2),
             "volume_units3": round(vol, 2)}
+
+
+def width_bands(view="FRONT", frame=None, z_top=1.10, z_bot=-1.15, bands=10, rows=64):
+    """Anatomical-span width curve (crown->chin), normalized to max width.
+    Registration matters: never compare curves normalized over different spans."""
+    s = silhouette(view, frame, rows)
+    out = []
+    for k in range(bands):
+        z = z_top - (k + 0.5) * (z_top - z_bot) / bands
+        best, bw = None, 0.0
+        for L, R, v in zip(s["left"], s["right"], s["v"]):
+            if L is None:
+                continue
+            if best is None or abs(v - z) < abs(best - z):
+                best, bw = v, R - L
+        out.append(bw)
+    m = max(out) or 1.0
+    return [round(w / m, 3) for w in out]
