@@ -69,3 +69,14 @@ case studies behind every doctrine line.
     photocopy. Each loop must include one direct model-output-vs-reference
     juxtaposition with new eyes -- the cache never contains the distinction
     you haven't noticed yet (ear protrusion went unmeasured for 60+ checks).
+
+11. Fusion erases sub-part attribution. After mesh_mind.fuse_group, ray-cast
+    only returns the fused name, never which original sphere is responsible.
+    Diagnose post-fuse zones via bounding-box containment on the STASHED
+    (hidden) parts, not by guessing from z-height. A z-height guess produced
+    a real regression here before the correct part was found.
+12. Regression-check denominators expire too. A width measured at a fixed
+    height can silently start including a part that grew into that height
+    band later (ears widened -> contaminated the face-width ruler used by
+    three other ratios). Re-derive measurement heights after any edit that
+    changes a part's z-extent, don't just re-run the old formula.

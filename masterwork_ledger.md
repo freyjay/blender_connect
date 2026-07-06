@@ -47,3 +47,46 @@ uniform scale overcorrected the torus's true equator (row 29: undershoots
 [12,16] vs [10,19] target) -- filed, not buried. Hair distinctions (rows
 2-8, 14-17) require pod-level edits across ~76 objects -- queued for a
 dedicated pass rather than rushed this turn.
+
+## Applied in practice (not hypothetical) -- 4 real findings, honestly tracked
+
+1. Zone A (hair, rows 2-8 right shortfall): REAL, attributed to HairHero_1/Hair_05/
+   Hair_13 via ray ownership + confirmed empty gap beyond them. Extended all three.
+   Gaps closed 4->3, 2->1, 2->1, 2->1 (partial win). Row 2 (the peak) unmoved --
+   HairHero_1's extension didn't reach that exact column; carried.
+
+2. Zone B (rows 14-17, "flat plateau"): mis-attributed TWICE.
+   - 1st guess (last turn): hair. Wrong -- z-band is below hair territory.
+   - 2nd guess (this turn): cheek/face, based on z-height alone, NOT verified by
+     attribution (SkinFused post-fuse can't attribute to sub-parts via ray-cast --
+     fusion destroys that). Applied a Cheek/Face narrowing on the guess.
+   - Verification: ZERO effect on the flagged rows. Regression check found real
+     damage instead (eye_span diff 0.0->0.042, mouth 0.003->0.028, jaw/cheek
+     0.013->0.152). REVERTED immediately.
+   - Correct attribution (via stashed-part bounding-box containment, since fused
+     ray-cast can't do it): EarR. The "excess" is the ear -- which was precisely
+     calibrated last turn (1.134 vs 1.13 target) via a dedicated probe. Likely
+     conclusion: my hand-digitized reference grid underestimated ear extent at
+     this exact height -- a reference-reading limit, not a model defect. Held.
+
+3. Discovered mid-repair: fusion (mesh_mind.fuse_group) erases original-part
+   attribution for ray-based diagnosis. Bounding-box containment on the STASHED
+   (hidden) parts is the correct diagnostic for post-fuse work; z-height alone
+   is a guess and produced a real, damaging misfire above.
+
+4. Discovered post-revert: the regression-check instrument itself is
+   contaminated. width_at(z=-0.02), used as the W denominator for eye_span/
+   mouth/jaw ratios, falls inside EarR's z-span (-0.44 to 0.16) ever since ears
+   were widened. Every regression check since that fix has measured cheek+ear
+   as one width. The 0.43/0.257/0.697 baseline predates the contamination --
+   not wrong, but the wrong ruler now. Geometry (skin: 1 island, 0 non-manifold)
+   confirmed sound; RATIO regression status is currently UNKNOWN, not passing,
+   until W is redefined at a contamination-free height.
+
+## Carried queue (honest, as of this pass)
+- Redefine regression W measurement at a height outside all ear z-spans;
+  re-verify true ratio status before trusting any prior "all passing" claim.
+- Row 2 hair peak gap (HairHero_1 didn't move it) -- needs a different pod.
+- Zone B ear-vs-reference-precision question unresolved -- do not adjust the
+  ear again without a more careful direct re-look at that exact photo height.
+- Collar equator (row 29) still undershoots, from two loops ago.
