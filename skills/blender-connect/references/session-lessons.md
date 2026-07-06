@@ -79,3 +79,20 @@ shallow. Five graph-routed corrections -> all five within 0.004 of
 reference. Caught an instrument artifact first: skull D/H used bbox H
 that included the NECK (0.727 false alarm; head-only = 0.938). Measure
 the measurement before trusting the diff.
+
+## The occlusion bug + 22-checkpoint lapping pass (boy v2, round 2)
+_caster silently reported a MISS whenever a ray's first hit was outside
+`frame` (e.g. hair in front of skin) instead of looking past it. This
+fabricated a false forehead-recession reading last round. Fixed with
+pass-through bounces (max 8). Re-measured: forehead was NEVER wrong
+(-0.84 vs -0.85 target) -- the defect was the ruler, not the geometry.
+Lesson: an instrument bug can manufacture a geometry problem that looks
+completely convincing. Chin WAS genuinely short (engine-confirmed, both
+engine-confirmed points closed to within 0.04). Fixing the chin opened a
+new hardness hotspot at the jaw-neck seam (77.7deg) caught only because
+depth was checked at the same spot as dimension -- softened to 55.3deg via
+neck taper + finer voxel. Full 6-ratio regression held (worst drift 0.013)
+and rotation continuity held (max jump 0.143) after both edits -- the part
+graph is what makes that cheap to prove instead of assume. Also surfaced,
+filed for next round: jaw WIDTH tapers too fast versus the reference
+front-width curve (band diff 0.51) -- a depth-correct, width-wrong jaw.

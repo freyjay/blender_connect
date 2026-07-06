@@ -57,3 +57,9 @@ read references/session-lessons.md when a loop stalls or a metric floors.
 When anything here is insufficient: references/toolkit-api.md has full
 signatures, examples, and pitfalls; references/session-lessons.md has the
 case studies behind every doctrine line.
+
+9. Lapping pass: for precision work, don't one-shot a fix. Cycle drawing,
+   depth, and dimension senses across many small checkpoints (20+), each a
+   real measure-vs-reference-and-decide, not a batch of assumed numbers.
+   Passing metrics still get looked at; a passing dimension can hide a
+   failing depth metric at the same spot, and vice versa.

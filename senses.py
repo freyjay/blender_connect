@@ -19,18 +19,25 @@ _H_RAMP = " .:-=+*#%@"
 
 
 def _caster(frame):
+    """v0.2: pass-through occlusion -- a hit outside `frame` peels through
+    (up to 8 bounces) instead of reporting a miss. Fixes false silhouette
+    breaks where hair/eyes shadow skin."""
     deps = bpy.context.evaluated_depsgraph_get()
     scene = bpy.context.scene
     objs = _targets(frame)
     names = {o.name for o in objs} if frame else None
 
-    def cast(origin, direction):
+    def cast(origin, direction, _bounces=0):
         hit, loc, nrm, _i, obj, _m = scene.ray_cast(deps, origin, direction)
-        if not hit or (names and obj.name not in names):
+        if not hit:
             return None
+        if names and obj.name not in names:
+            if _bounces >= 8:
+                return None
+            nudged = loc + direction.normalized() * 1e-4
+            return cast(nudged, direction, _bounces + 1)
         return loc, nrm, obj.name
     return cast, objs
-
 
 def _edge_bisect(cast, forward, right, up_s, v, u_in, u_out, start, iters=7):
     """Sub-pixel silhouette edge: bisect between a hitting u and a missing u."""
