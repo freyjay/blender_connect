@@ -241,27 +241,191 @@ def width_bands(view="FRONT", frame=None, z_top=1.10, z_bot=-1.15, bands=10, row
     return [round(w / m, 3) for w in out]
 
 
-def occupancy_grid(view="FRONT", n=30, frame=None):
-    """Auto-fit n x n occupancy grid over ALL visible mesh (or frame). Row 0/col 0
-    = top-left of the true bounding extent; each cell 1 if any surface is hit.
-    Precision instrument: dense enough to catch what sparse landmarks miss
-    (asymmetric bulges, unnatural flat plateaus, isolated single-part errors)."""
-    import bpy
+def occupancy_grid(view="FRONT", n=30, frame=None, center=None, extent=None):
+    """n x n occupancy grid. WINDOW LOCK: pass center=/extent= (from a prior
+    call's return) to measure in the SAME window across edits. Auto-fit
+    re-frames every call, so auto-fit grids from different moments are NOT
+    cell-comparable (D1 class: never compare over different spans).
+    Returns grid + its window (center, extent, n, view) for reuse."""
+    import bpy, eye
     from mathutils import Vector
-    objs = _targets(frame)
-    xs, zs = [], []
-    for o in objs:
-        for c in o.bound_box:
-            w = o.matrix_world @ Vector(c)
-            xs.append(w.x); zs.append(w.z)
-    if not xs:
-        return {"grid": [], "center": (0,0), "extent": (0,0)}
-    cu, cv = (min(xs)+max(xs))/2, (min(zs)+max(zs))/2
-    eu, ev = (max(xs)-min(xs))/2*1.03, (max(zs)-min(zs))/2*1.03
+    if center is None or extent is None:
+        _f, right, up_s = eye._basis(view)
+        objs = _targets(frame)
+        us, vs = [], []
+        for o in objs:
+            for c in o.bound_box:
+                w = o.matrix_world @ Vector(c)
+                us.append(w.dot(right)); vs.append(w.dot(up_s))
+        if not us:
+            return {"grid": [], "center": (0, 0), "extent": (0, 0),
+                    "n": n, "view": view, "locked": False}
+        cu, cv = (min(us) + max(us)) / 2, (min(vs) + max(vs)) / 2
+        eu, ev = (max(us) - min(us)) / 2 * 1.03, (max(vs) - min(vs)) / 2 * 1.03
+        locked = False
+    else:
+        cu, cv = center
+        eu, ev = extent
+        locked = True
     import eye
     g = eye.render_ascii(view=view, width=n, height=n, mode="id",
                          center=(cu, cv), extent=(eu, ev), frame=frame)
     rows = g.split(chr(10))[2 if frame is None else 1:]
     grid = [[1 if ch != " " else 0 for ch in row] for row in rows if row]
-    return {"grid": grid, "center": (round(cu,3), round(cv,3)),
-            "extent": (round(eu,3), round(ev,3))}
+    return {"grid": grid, "center": (round(cu, 4), round(cv, 4)),
+            "extent": (round(eu, 4), round(ev, 4)), "n": n, "view": view,
+            "locked": locked}
+
+
+def _row_edges(row):
+    idx = [i for i, v in enumerate(row) if v]
+    return (idx[0], idx[-1]) if idx else (None, None)
+
+
+def grid_diff(a, b, tol=1e-6):
+    """Cell-exact diff of two occupancy grids IN THE SAME WINDOW. Refuses
+    mismatched windows (misregistration is a D1-class error, not a diff).
+    Render: '+' added, '-' removed, '#' stable, ' ' empty."""
+    if a["n"] != b["n"] or a.get("view") != b.get("view") or \
+       any(abs(x - y) > tol for x, y in zip(a["center"], b["center"])) or \
+       any(abs(x - y) > tol for x, y in zip(a["extent"], b["extent"])):
+        return {"error": "window mismatch -- re-measure with the stored window",
+                "a_window": (a["center"], a["extent"], a["n"]),
+                "b_window": (b["center"], b["extent"], b["n"])}
+    ga, gb = a["grid"], b["grid"]
+    added, removed, art, edge_deltas = [], [], [], []
+    for r in range(min(len(ga), len(gb))):
+        ra, rb = ga[r], gb[r]
+        line = []
+        for c in range(min(len(ra), len(rb))):
+            va, vb = ra[c], rb[c]
+            if vb and not va:
+                added.append((r, c)); line.append("+")
+            elif va and not vb:
+                removed.append((r, c)); line.append("-")
+            else:
+                line.append("#" if va else " ")
+        art.append("".join(line))
+        ea, eb = _row_edges(ra), _row_edges(rb)
+        dl = None if None in (ea[0], eb[0]) else eb[0] - ea[0]
+        dr = None if None in (ea[1], eb[1]) else eb[1] - ea[1]
+        if dl or dr:
+            edge_deltas.append({"row": r, "d_left": dl, "d_right": dr})
+    return {"n_added": len(added), "n_removed": len(removed),
+            "added": added[:60], "removed": removed[:60],
+            "edge_deltas": edge_deltas, "render": art}
+
+
+def attribute(grid, cells, stash=None, margin=0.02):
+    """Post-fuse ownership: which STASHED (hidden) part claims each grid cell.
+    Fusion erases ray attribution (ledger finding 3); projected-bbox
+    containment on the hidden part stash is the proven diagnostic. Ranked:
+    inside-first, then gap distance. z-height alone is a guess -- never again."""
+    import bpy, eye
+    from mathutils import Vector
+    _f, right, up_s = eye._basis(grid.get("view", "FRONT"))
+    if stash is None:
+        stash = [o.name for o in bpy.data.objects
+                 if o.type == "MESH" and o.hide_get()]
+    boxes = {}
+    for name in stash:
+        o = bpy.data.objects.get(name)
+        if not o:
+            continue
+        us, vs = [], []
+        for cbb in o.bound_box:
+            w = o.matrix_world @ Vector(cbb)
+            us.append(w.dot(right)); vs.append(w.dot(up_s))
+        boxes[name] = (min(us), max(us), min(vs), max(vs))
+    (cu, cv), (eu, ev), n = grid["center"], grid["extent"], grid["n"]
+    out = []
+    for (r, c) in cells:
+        u = cu - eu + (c + 0.5) * (2 * eu / n)
+        v = cv + ev - (r + 0.5) * (2 * ev / n)
+        cands = []
+        for name, (u0, u1, v0, v1) in boxes.items():
+            inside = (u0 - margin <= u <= u1 + margin) and \
+                     (v0 - margin <= v <= v1 + margin)
+            du = max(u0 - u, u - u1, 0.0)
+            dv = max(v0 - v, v - v1, 0.0)
+            d = (du * du + dv * dv) ** 0.5
+            if inside or d < 0.15:
+                cands.append((0 if inside else 1, round(d, 4), name))
+        cands.sort()
+        out.append({"cell": (r, c), "u": round(u, 3), "v": round(v, 3),
+                    "owners": [{"part": nm, "inside": fl == 0, "gap": d}
+                               for fl, d, nm in cands[:4]]})
+    return out
+
+
+def clean_heights(exclude, z_lo=-1.15, z_hi=1.10, steps=48, margin=0.02):
+    """Ruler-contamination guard (ledger finding 4): measurement heights whose
+    z lies OUTSIDE every excluded part's world z-span. Recommends the midpoint
+    of the widest clean run."""
+    import bpy
+    from mathutils import Vector
+    spans = []
+    for name in exclude:
+        o = bpy.data.objects.get(name)
+        if not o:
+            continue
+        zs = [(o.matrix_world @ Vector(c)).z for c in o.bound_box]
+        spans.append((min(zs) - margin, max(zs) + margin))
+    zs_clean, runs, cur = [], [], []
+    for k in range(steps):
+        z = z_lo + (k + 0.5) * (z_hi - z_lo) / steps
+        if any(a <= z <= b for a, b in spans):
+            if cur:
+                runs.append(cur)
+            cur = []
+        else:
+            zs_clean.append(round(z, 3)); cur.append(z)
+    if cur:
+        runs.append(cur)
+    best = max(runs, key=len) if runs else []
+    rec = round(best[len(best) // 2], 3) if best else None
+    return {"clean": zs_clean, "recommended": rec,
+            "excluded_spans": [(round(a, 3), round(b, 3)) for a, b in spans]}
+
+
+def width_at(z, view="FRONT", frame=None, rows=96):
+    """Silhouette width at the row nearest z (sub-pixel edges). Pair with
+    clean_heights() before using as a ratio denominator."""
+    s = silhouette(view, frame, rows)
+    best, bw, bv = None, None, None
+    for L, R, v in zip(s["left"], s["right"], s["v"]):
+        if L is None:
+            continue
+        if best is None or abs(v - z) < best:
+            best, bw, bv = abs(v - z), R - L, v
+    return {"z_requested": z,
+            "z_measured": round(bv, 4) if bv is not None else None,
+            "width": round(bw, 4) if bw is not None else None}
+
+
+def perception_floor(view="FRONT", frame=None, n=30, trials=4):
+    """Empirical noise floor: re-sample the SAME window with sub-cell grid
+    offsets and report edge wobble with ZERO model change. A distinction at
+    or below the floor is instrument noise, not evidence. This makes the
+    masterwork exit criterion computable."""
+    base = occupancy_grid(view=view, n=n, frame=frame)
+    (cu, cv), (eu, ev) = base["center"], base["extent"]
+    cell = 2 * eu / n
+    e0 = [_row_edges(r) for r in base["grid"]]
+    max_wobble = 0
+    for t in range(1, trials + 1):
+        f = t / (trials + 1.0) - 0.5
+        g = occupancy_grid(view=view, n=n, frame=frame,
+                           center=(cu + f * cell, cv + f * cell),
+                           extent=(eu, ev))
+        for (a0, b0), (a1, b1) in zip(e0, [_row_edges(r) for r in g["grid"]]):
+            for x0, x1 in ((a0, a1), (b0, b1)):
+                if x0 is not None and x1 is not None:
+                    max_wobble = max(max_wobble, abs(x1 - x0))
+    wb0 = width_bands(view=view, frame=frame)
+    wb1 = width_bands(view=view, frame=frame, rows=71)
+    wb_floor = max(abs(x - y) for x, y in zip(wb0, wb1))
+    return {"occupancy_edge_floor_cells": max_wobble,
+            "cell_world_units": round(cell, 4),
+            "width_band_floor": round(wb_floor, 3),
+            "note": "distinction <= floor is inside instrument noise"}

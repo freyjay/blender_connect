@@ -7,10 +7,15 @@
 
 ## Next
 - [ ] Ordered cross-section loops (connect edge pairs into polylines)
-- [ ] Diff renders (before/after an edit, changed cells highlighted)
+
 - [ ] Multi-view composite report (TOP+FRONT+RIGHT in one call)
 
 ## Done
+- [x] Diff renders: senses.grid_diff() -- window-checked, +/- cell render
+- [x] Window lock on occupancy_grid (auto-fit misregistration fixed)
+- [x] senses.attribute(): post-fuse ownership via stashed-part bbox
+- [x] senses.clean_heights()/width_at(): ruler-contamination guard
+- [x] senses.perception_floor(): masterwork exit criterion measurable
 - [x] Patch MCP addon sendall truncation (issue #21) -- see PATCHES.md
 - [x] Diagnose screenshot pipeline (PNG, 786KB budget, iterative downscale)
 - [x] v0.1 eye.py: ray-cast ASCII renderer + scanline probe

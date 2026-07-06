@@ -90,3 +90,33 @@ dedicated pass rather than rushed this turn.
 - Zone B ear-vs-reference-precision question unresolved -- do not adjust the
   ear again without a more careful direct re-look at that exact photo height.
 - Collar equator (row 29) still undershoots, from two loops ago.
+
+## Engine calibration pass (scrutiny session -- no model edits)
+Scrutiny found one latent defect and instrumented three known limits:
+
+1. LATENT: occupancy_grid auto-fit re-framed its window every call --
+   cross-edit grid comparisons were only valid by luck (D1 class).
+   Fix: window lock (center=/extent= params, window returned for reuse);
+   auto-fit now projects via eye._basis (view-correct, was FRONT-only x/z).
+2. grid_diff(): cell-exact before/after in the SAME window; refuses
+   mismatched windows. Closes the overshoot-chase failure mode (todo item).
+3. attribute(): stashed-part projected-bbox ownership as an instrument
+   (finding 3 doctrine). Verified live: re-derived the EarR/EarL ownership
+   of outer cells at v=-0.20 with zero guessing.
+4. clean_heights() + width_at(): ruler-contamination guard (finding 4).
+   Verified: old W height z=-0.02 lies inside both ear spans (-0.46..0.18),
+   W=1.982 there vs W=1.474 at recommended clean z=0.655. Old ratio
+   baselines (0.43/0.257/0.697) are RETIRED -- wrong ruler, not comparable.
+   Next model pass: re-baseline eye_span/mouth/jaw ratios against clean W.
+5. perception_floor(): MEASURED. 30x30 full-figure window: edge wobble
+   1 cell (0.0849 world units); width_bands floor 0.052 (normalized).
+   Consequences, applied to the carried queue:
+   - 1-cell hair gaps (rows 3-8 residuals) are AT the floor: not evidence.
+     Do not chase without a tighter window (head-only or n>=44, then
+     re-measure the floor for that window).
+   - Row-2 peak gap and D2 residual (+0.13/+0.14 > 0.052) remain real.
+   Masterwork exit criterion is now computable, not a vibe.
+
+Engine gains: window lock, grid_diff, attribute, clean_heights, width_at,
+perception_floor. Verified live on boy_v2; self-tests: lock roundtrip 0/0,
+mismatch refused, attribution inside-hit, floor reproducible.
