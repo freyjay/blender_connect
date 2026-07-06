@@ -70,3 +70,12 @@ ray ranging: 5.0983 vs 5.0983 (err 0). Full 3D fix err 0.0003; radius
 0.5499 vs 0.55. Annulus ownership read target structure (Bull center,
 Outer ring). Range card drawn in SketchUp FROM the perception numbers --
 first time drawing served the work as diagnostic memory, not demo.
+
+## Reference metrology (boy v2 vs photos)
+Measured the reference IMAGES into numeric targets (pixel proportions,
++-3 pct), measured the model with the same ratio instruments, diffed:
+eyes 15 pct too wide, iris small, neck thin, mouth narrow, occiput
+shallow. Five graph-routed corrections -> all five within 0.004 of
+reference. Caught an instrument artifact first: skull D/H used bbox H
+that included the NECK (0.727 false alarm; head-only = 0.938). Measure
+the measurement before trusting the diff.
