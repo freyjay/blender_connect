@@ -50,3 +50,6 @@ Compare BEFORE and AFTER in the same window. See session-lessons for usage.
 Platform notes: SketchUp MCP edges go through GeometryInput.add_vertex ->
 add_edge(i, j) (vertex INDICES) -> group.get_entities().fill(); color after fill
 via edge.set_color(SUColor). Sandbox is an allowlist: no imports, no any().
+
+- cavity_probe(center, rim_radius, rim_z, n, frame) -> holds_liquid,
+  max/mean_depth, volume_units3. Use for any vessel/container BEFORE declaring done.

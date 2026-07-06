@@ -185,3 +185,32 @@ def render_hardness(view="RIGHT", frame=None, width=56, height=None, aspect=0.5)
     header = "[hardness {} | {}x{} | 60deg=full | boundary=@]".format(
         view if isinstance(view, str) else "custom", width, height)
     return chr(10).join([header] + rows_out)
+
+
+def cavity_probe(center=(0.0, 0.0), rim_radius=0.7, rim_z=2.1, n=14, frame=None):
+    """Function-not-form probe: vertical rays down into a vessel.
+    Returns holds_liquid, max/mean interior depth below rim, volume held.
+    Born from a human audit: a mug modeled solid scored perfectly on every
+    surface sense. Surface senses do not see cavities; this one does."""
+    deps = bpy.context.evaluated_depsgraph_get()
+    scene = bpy.context.scene
+    down = Vector((0, 0, -1))
+    cast, _ = _caster(frame)
+    cell = (2.0 * rim_radius / n) ** 2
+    depths = []
+    for i in range(n):
+        for j in range(n):
+            x = center[0] - rim_radius + (i + 0.5) * 2 * rim_radius / n
+            y = center[1] - rim_radius + (j + 0.5) * 2 * rim_radius / n
+            if (x - center[0]) ** 2 + (y - center[1]) ** 2 > rim_radius ** 2:
+                continue
+            h = cast(Vector((x, y, rim_z + 5.0)), down)
+            if h:
+                depths.append(max(0.0, rim_z - h[0].z))
+    if not depths:
+        return {"holds_liquid": False, "max_depth": 0.0, "volume_units3": 0.0}
+    vol = sum(d * cell for d in depths)
+    mx = max(depths)
+    return {"holds_liquid": mx > 0.3, "max_depth": round(mx, 2),
+            "mean_depth": round(sum(depths) / len(depths), 2),
+            "volume_units3": round(vol, 2)}

@@ -34,3 +34,10 @@ that built this system: text always survives; make the math speak text.
 2. Try-ladder constructor variants; read tracebacks as documentation
    ("missing 1 required positional argument: vertex1_index" IS the spec).
 3. Verify via authoritative counters (get_num_edges) not assumptions.
+
+## The solid mug (form vs function)
+A mug passed every surface sense (hardness 85.8->51.1, clean silhouette,
+good ratios) while being a solid cylinder -- no cavity. Human audit caught it.
+cavity_probe was born: 0.0 depth before, 1.88 deep / 2.93 units3 after boolean
+carve. Also: edges mode showed a disc, not a ring -- same-object depth cliffs
+are invisible to object-boundary edges; depth mode is the interior sense.

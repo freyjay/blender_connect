@@ -33,6 +33,9 @@ read references/session-lessons.md when a loop stalls or a metric floors.
 4. Never guess what you cannot see; say so, then build an instrument.
 5. Enumerate APIs (dir(), probe ladders); never guess signatures.
 6. A veto from the math is a win.
+7. Verify FUNCTION, not just form. Surface senses do not see cavities or interiors;
+   vessels need senses.cavity_probe(). Depth cliffs within one object are invisible
+   to edges mode -- use depth mode for interiors.
 
 ## Standard Workflow
 
