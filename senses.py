@@ -239,3 +239,29 @@ def width_bands(view="FRONT", frame=None, z_top=1.10, z_bot=-1.15, bands=10, row
         out.append(bw)
     m = max(out) or 1.0
     return [round(w / m, 3) for w in out]
+
+
+def occupancy_grid(view="FRONT", n=30, frame=None):
+    """Auto-fit n x n occupancy grid over ALL visible mesh (or frame). Row 0/col 0
+    = top-left of the true bounding extent; each cell 1 if any surface is hit.
+    Precision instrument: dense enough to catch what sparse landmarks miss
+    (asymmetric bulges, unnatural flat plateaus, isolated single-part errors)."""
+    import bpy
+    from mathutils import Vector
+    objs = _targets(frame)
+    xs, zs = [], []
+    for o in objs:
+        for c in o.bound_box:
+            w = o.matrix_world @ Vector(c)
+            xs.append(w.x); zs.append(w.z)
+    if not xs:
+        return {"grid": [], "center": (0,0), "extent": (0,0)}
+    cu, cv = (min(xs)+max(xs))/2, (min(zs)+max(zs))/2
+    eu, ev = (max(xs)-min(xs))/2*1.03, (max(zs)-min(zs))/2*1.03
+    import eye
+    g = eye.render_ascii(view=view, width=n, height=n, mode="id",
+                         center=(cu, cv), extent=(eu, ev), frame=frame)
+    rows = g.split(chr(10))[2 if frame is None else 1:]
+    grid = [[1 if ch != " " else 0 for ch in row] for row in rows if row]
+    return {"grid": grid, "center": (round(cu,3), round(cv,3)),
+            "extent": (round(eu,3), round(ev,3))}

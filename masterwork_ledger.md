@@ -28,3 +28,22 @@ blockout ceiling (logged as fidelity floor, not fixable by sphere tweak).
 Then two instrument failures in the fix itself: a taper-confounded width
 ratio faked a failure, causing an overshoot chase (1.14 -> 1.21 -> 1.14).
 Ears now: tip 0.998, ratio 1.134 vs 1.13 target.
+
+## Precision upgrade: 30x30 occupancy grid (per-cell, not per-band)
+Sparse landmark comparison (10 bands, a dozen profile points) was the real
+measuring problem -- too coarse to see localized errors. New instrument:
+senses.occupancy_grid(), auto-fit to true bounding extent, dense enough to
+catch what bands can't.
+
+First pass found 3 distinctions bands never surfaced:
+- rows 2-8: hair falls short 2-4 cols on the right (upper asymmetric bulge)
+- rows 14-17: hair holds an unnatural flat plateau 2-3 cols too far LEFT
+  while reference has already begun tapering there
+- row 28: Collar alone (clean ray-ownership attribution) 3/2 cols too wide
+
+Fixed row 28 (Collar scale 1.0->0.62): right edge now EXACT, left edge
+4-off -> 1-off. Checking neighbor rows (never fix in isolation) found the
+uniform scale overcorrected the torus's true equator (row 29: undershoots
+[12,16] vs [10,19] target) -- filed, not buried. Hair distinctions (rows
+2-8, 14-17) require pod-level edits across ~76 objects -- queued for a
+dedicated pass rather than rushed this turn.
