@@ -145,3 +145,55 @@ constants came from chat-viewed photos). Drop front/right photos in
 blender-connect-experiment/refs/, gate them with refsense.preview(), then
 engine2.compare() replaces the band/landmark loop. Clean-ruler ratio
 re-baseline still pending from the scrutiny pass.
+
+## Ground-truth depth calibration (torus + pyramid, exact known geometry)
+Purpose: the boy-model calibration kept hitting an ambiguity -- is a mismatch the
+MODEL's fault or my REFERENCE-READING's fault? Primitives with exact, self-known
+geometry remove that ambiguity entirely. Built depth_calibration.blend.
+
+### Torus (hole depth, thickness, tilt)
+- Built R=1.0, r=0.30, hole facing camera. First scan/bisect gave R=0.95,
+  r=0.30 exact -- suspicious (r perfect, R off by 0.05). Hypothesis: mesh
+  faceting. Test: doubled segment resolution (24->48). Result: BIT-IDENTICAL
+  transitions. Faceting ruled out definitively -- resolution cannot cause an
+  error that doesn't shrink under 2x refinement.
+- Queried actual mesh vertices directly: true outer edge = -1.300 exactly
+  (matches R+r). My scan measured -1.25. Confirmed: the SCAN CODE was wrong,
+  not the mesh.
+- Root cause found: bisect(x_in, x_out) requires x_in=hit-side, x_out=miss-
+  side; my calling convention had them SWAPPED in both branches of the
+  transition ternary, causing convergence to a point inside the wrong region
+  instead of the true boundary. (Checked senses.py's real _edge_bisect --
+  its calling convention is correct; this bug was fresh to this test script,
+  not a shipped defect.)
+- Fixed. Re-verified: R=1.0000, r=0.3000 -- EXACT to 4 decimals, all 4 edges.
+- Thickness sweep: r=0.20->0.55 (nearly doubled). Recovered exactly (1.0/0.55)
+  again. Size/thickness tracking confirmed solid post-fix.
+- Tilt test (30 deg): naive flat-disk model predicts outer/inner extent via
+  cos(30). Measured extents (1.0656/0.6665) both push OUTWARD of the flat
+  prediction (1.0392/0.6928) by ~2.5-3% -- a real, quantified limit: a torus
+  has 3D tube roundness a flat-ellipse model can't capture. Small, consistent,
+  now known rather than assumed.
+
+### Pyramid (depth gradient, angle, size)
+- Square pyramid (4-vertex cone), R=1.0, H=2.0. First attempt copied the
+  torus's "tip 90 deg to face camera" trick -- wrong, knocked the apex
+  sideways, produced a nonsensical depth jump. Corrected: axis stays vertical
+  (apex up), only Z-rotation controls vertex/face phase.
+- 45 deg Z-rotation gave a FLAT depth profile (face pointed dead at camera,
+  zero gradient) -- wrong guess for vertex-on. Default rotation (0 deg) gave
+  a clean symmetric V: depth 3.0 -> 2.5 -> 3.0 across x=[-0.5,0,0.5].
+- Slope = exactly 1.0. Verified this is a pure geometric INVARIANT (a square
+  viewed vertex-on is a 45-deg diamond; diamond edges are always unit-slope
+  regardless of size) -- not an R/H-dependent quantity, a clean symmetry
+  check the depth sense passed exactly.
+- Amplitude (0.5 at R=1) DOES carry size: predicted = R/2 always at the exact
+  mid-height (H-independent there). Changed R: 1.0->1.6. Measured amplitude
+  0.7989 vs predicted 0.8 -- confirmed size adjustment tracks correctly.
+
+## Takeaway
+Ground-truth primitives did exactly what they're for: caught a real bug with
+total certainty (impossible against a photo), confirmed size/thickness
+tracking to 4 decimals, and quantified (rather than guessed at) where a
+simplifying depth model breaks down. This is the calibration the boy-model
+work has been missing a foundation under.

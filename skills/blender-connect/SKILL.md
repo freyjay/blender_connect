@@ -80,3 +80,12 @@ case studies behind every doctrine line.
     band later (ears widened -> contaminated the face-width ruler used by
     three other ratios). Re-derive measurement heights after any edit that
     changes a part's z-extent, don't just re-run the old formula.
+
+13. bisect(x_in, x_out) invariant: x_in MUST be the hit/true side, x_out the
+    miss/false side, in every call, or the algorithm silently converges inside
+    the wrong region instead of the boundary -- no error is raised. Ground-truth
+    primitives (exact known R/r/H) are how this class of bug gets caught for
+    certain; verify any new ad-hoc bisection against a known-geometry testbed
+    before trusting it on organic/approximate work.
+14. When ambiguous whether model or reference is wrong, build a ground-truth
+    primitive (known R, r, H, angle) and test the INSTRUMENT there first.
