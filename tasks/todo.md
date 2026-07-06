@@ -20,3 +20,10 @@
 - [x] v0.2: edges mode (uppercase silhouettes), shade mode (curvature perception)
 - [x] v0.2: 2x2 supersampling option, cross-section slicer
 - [x] Calibration round 2: v0.2 FRONT render verified (cone top/apex-up, sphere right, cube peek)
+
+## Curriculum (v0.3) -- DONE
+- [x] S1 proportions(): 2D width profiles, ratios, symmetry (part-by-part capable)
+- [x] S2 contour_angles(): sub-pixel silhouette tracing, tangent angles, corner census
+- [x] S3 turntable(): 18-deg (5%) rotation sweep, form-continuity verification
+- [x] S4 render_hardness(): normal-gradient perception of sharp vs soft
+- [x] S5 doctrine: every sense takes frame=[parts]; refine region by region
