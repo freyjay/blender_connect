@@ -27,3 +27,8 @@
 - [x] S3 turntable(): 18-deg (5%) rotation sweep, form-continuity verification
 - [x] S4 render_hardness(): normal-gradient perception of sharp vs soft
 - [x] S5 doctrine: every sense takes frame=[parts]; refine region by region
+
+## Skill (v0.4) -- DONE
+- [x] Authored blender-connect SKILL.md via skill-creator doctrine (3 refinement passes)
+- [x] references/: toolkit-api.md + session-lessons.md (progressive disclosure)
+- [x] Pushy trigger description, 6/6 trigger-simulation pass
