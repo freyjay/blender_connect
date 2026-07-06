@@ -61,3 +61,14 @@ via edge.set_color(SUColor). Sandbox is an allowlist: no imports, no any().
 - fuse_group(graph, layer, voxel) -> fuses ONE group, stashes members hidden
 - Adjustment protocol: edit part -> fuse_group(its layer) -> island_census
   + witness transform-hashes on sibling layers.
+
+## Target acquisition (integrated perception recipe)
+SEE: render_ascii(id) over a FIXED window -> parse non-space cells ->
+character centroid = coarse aim. ACT: single ray at aim; part ownership
+(mesh_mind graph) = ring score. REFINE: edge bisection L/R/T/B -> sub-pixel
+center + radius. RANGE: ray hit-distances on center + annulus -> depth,
++half-thickness for plane center; (u,v)+depth = full 3D fix. DRAW: range
+card from the perception's own numbers (rings, crosshair, shot marks,
+error vectors, depth scale bar) -- the drawing is the loop's diagnostic
+memory. Perception uses ONLY renders and rays; object coordinates are
+referee-sealed for error scoring.

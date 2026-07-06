@@ -62,3 +62,11 @@ pupil ray hit PupilL, spike hit HairHero_0, forehead hit SkinFused; scene
 census 55 = exactly the declared graph. Jaw edit -> skin-only refuse left
 5 witness layers byte-identical. Surfaces are decisions; the graph is where
 the decisions live.
+
+## Target practice (layers talking)
+Random sealed spawn. Shot 1 aimed by READING the ASCII picture (character
+centroid): Bull, err 0.0095. Bisection refine: Bull, err 0.0000. Depth via
+ray ranging: 5.0983 vs 5.0983 (err 0). Full 3D fix err 0.0003; radius
+0.5499 vs 0.55. Annulus ownership read target structure (Bull center,
+Outer ring). Range card drawn in SketchUp FROM the perception numbers --
+first time drawing served the work as diagnostic memory, not demo.
