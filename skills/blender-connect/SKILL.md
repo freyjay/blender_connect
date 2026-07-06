@@ -63,3 +63,9 @@ case studies behind every doctrine line.
    real measure-vs-reference-and-decide, not a batch of assumed numbers.
    Passing metrics still get looked at; a passing dimension can hide a
    failing depth metric at the same spot, and vice versa.
+
+10. Consult the reference FRESH every loop; derived targets expire.
+    Comparing model measurements to cached constants is measuring the
+    photocopy. Each loop must include one direct model-output-vs-reference
+    juxtaposition with new eyes -- the cache never contains the distinction
+    you haven't noticed yet (ear protrusion went unmeasured for 60+ checks).

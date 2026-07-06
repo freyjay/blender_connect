@@ -17,3 +17,14 @@ Engine gains: width_bands() anatomical registration; graph learned JawBlend.
 ## Carried queue
 - D2 residual: bands 1-2 (+0.13/+0.14)
 - D3: seam (value below, post-reposition)
+
+## Honesty audit (post-Loop-1)
+User challenge: 'did you actually compare to the reference?' Answer: NO --
+loops compared model vs CACHED derived constants; the reference images
+stopped being consulted after initial digitization. Fresh look found what
+the cache never contained: ear protrusion (defining trait, zero coverage
+in 60+ measurements), nose too present from front, lid-over-iris beyond
+blockout ceiling (logged as fidelity floor, not fixable by sphere tweak).
+Then two instrument failures in the fix itself: a taper-confounded width
+ratio faked a failure, causing an overshoot chase (1.14 -> 1.21 -> 1.14).
+Ears now: tip 0.998, ratio 1.134 vs 1.13 target.
