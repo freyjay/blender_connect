@@ -53,3 +53,11 @@ via edge.set_color(SUColor). Sandbox is an allowlist: no imports, no any().
 
 - cavity_probe(center, rim_radius, rim_z, n, frame) -> holds_liquid,
   max/mean_depth, volume_units3. Use for any vessel/container BEFORE declaring done.
+
+## mesh_mind.py (topology awareness)
+- declare_graph() -> layer dict {continuity: fuse|separate, members}
+- connectivity_check(members) -> components (must be 1 before fusing)
+- island_census(obj) -> {islands, non_manifold_edges, verts} (1 / 0 for clean skin)
+- fuse_group(graph, layer, voxel) -> fuses ONE group, stashes members hidden
+- Adjustment protocol: edit part -> fuse_group(its layer) -> island_census
+  + witness transform-hashes on sibling layers.

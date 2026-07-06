@@ -36,6 +36,13 @@ read references/session-lessons.md when a loop stalls or a metric floors.
 7. Verify FUNCTION, not just form. Surface senses do not see cavities or interiors;
    vessels need senses.cavity_probe(). Depth cliffs within one object are invisible
    to edges mode -- use depth mode for interiors.
+8. Think as a MESH, by PARTS: declare a part graph (mesh_mind.declare_graph)
+   stating which surfaces are CONTINUOUS (one manifold) and where BREAKS
+   belong. Prove connectivity BEFORE fusing (connectivity_check), prove
+   continuity AFTER (island_census: islands=1, non-manifold=0), prove breaks
+   by ray ownership. Route every adjustment through the graph: edit the part,
+   re-fuse ONLY its group, witness-check that sibling layers are untouched.
+   This keeps what is seen, made, created, and adjusted in one shared model.
 
 ## Standard Workflow
 

@@ -53,3 +53,12 @@ are invisible to object-boundary edges; depth mode is the interior sense.
    error (underestimated cartoon cranium; eyes belong at vertical middle).
    Coordinated lift fixed all five in one edit: 0.50/0.63/0.38/0.25/0.49.
 4. Passing metrics get NO adjustment (profile nose passed loop 1 untouched).
+
+## The disconnect (seen/made/created/adjusted)
+Boy head, 64 objects: whole-scene fusing erased surface intent. Fix: part
+graph with continuity contracts. Proofs on first run: skin connectivity =
+1 component pre-fuse; SkinFused = 1 island, 0 non-manifold; ray ownership:
+pupil ray hit PupilL, spike hit HairHero_0, forehead hit SkinFused; scene
+census 55 = exactly the declared graph. Jaw edit -> skin-only refuse left
+5 witness layers byte-identical. Surfaces are decisions; the graph is where
+the decisions live.
