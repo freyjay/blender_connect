@@ -1,6 +1,9 @@
 # TODO -- blender_connect
 
 ## Now
+- [ ] Place boy reference photos (front/right) in experiment refs/; gate
+      with refsense.preview(); run first engine2.compare() loop
+- [ ] Re-baseline eye_span/mouth/jaw ratios at clean ruler z=0.655
 - [ ] Perspective projection mode
 - [ ] Auto-calibration self-test scene (asserts, not eyeballs)
 - [ ] Curve inspector (Bezier control points, curvature sampling)
@@ -11,6 +14,12 @@
 - [ ] Multi-view composite report (TOP+FRONT+RIGHT in one call)
 
 ## Done
+- [x] ENGINE v2: refsense digitizer (sub-pixel, alpha/background auto)
+- [x] ENGINE v2: canonical registration + 96-row signed error field
+- [x] ENGINE v2: per-row floor field (median 0.0156 world, 5.5x v1)
+- [x] ENGINE v2: auto-generated ranked distinctions + prescriptions
+- [x] ENGINE v2: verify_pass same-field re-measure + registration drift
+- [x] ENGINE v2 calibration gate: round-trip masterwork=True, 0.1% mismatch
 - [x] Diff renders: senses.grid_diff() -- window-checked, +/- cell render
 - [x] Window lock on occupancy_grid (auto-fit misregistration fixed)
 - [x] senses.attribute(): post-fuse ownership via stashed-part bbox

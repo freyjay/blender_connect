@@ -120,3 +120,28 @@ Scrutiny found one latent defect and instrumented three known limits:
 Engine gains: window lock, grid_diff, attribute, clean_heights, width_at,
 perception_floor. Verified live on boy_v2; self-tests: lock roundtrip 0/0,
 mismatch refused, attribution inside-hit, floor reproducible.
+
+## Engine v2 shipped -- direct reference->product translation
+Files: refsense.py (reference senses) + engine2.py (pipeline). v1 unchanged
+as substrate. What changed structurally:
+- Reference is now a first-class measured object: images digitized to the
+  SAME sub-pixel silhouette structure the model uses. Hand-digitized
+  constants era closed (root cause of the honesty-audit failure).
+- Registration is solved per measurement (crown/bottom anchors + median
+  midline), never assumed. D1 doctrine enforced by construction.
+- Comparison is a 96-row signed error field, both edges; distinctions are
+  GENERATED as ranked clusters above the floor, not eyeballed as 3 picks.
+- Prescriptions: each cluster -> owning stashed parts + world-unit
+  magnitude + direction. verify_pass() re-measures the identical field.
+- Floor is a FIELD: first cut (scalar max) was convicted pre-promotion --
+  one ambiguous hair row taxed the whole figure (0.053 world, only 1.6x v1).
+  Per-row floor: median 0.0156 world (5.5x v1 precision), p90 0.068 honest.
+Calibration gate (instrument proves itself before promotion): rasterize the
+model's own silhouette to a synthetic 512px photo, digitize back, compare ->
+masterwork=True, zero false clusters, pipeline error 0.0064 canonical max,
+overlay mismatch 0.1%.
+BLOCKING the first real v2 loop: no reference photos exist as files (v1
+constants came from chat-viewed photos). Drop front/right photos in
+blender-connect-experiment/refs/, gate them with refsense.preview(), then
+engine2.compare() replaces the band/landmark loop. Clean-ruler ratio
+re-baseline still pending from the scrutiny pass.

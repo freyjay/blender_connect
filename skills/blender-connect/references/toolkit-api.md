@@ -72,3 +72,40 @@ card from the perception's own numbers (rings, crosshair, shot marks,
 error vectors, depth scale bar) -- the drawing is the loop's diagnostic
 memory. Perception uses ONLY renders and rays; object coordinates are
 referee-sealed for error scoring.
+
+
+## Engine v2 -- refsense.py / engine2.py (direct reference->product translation)
+
+Load pattern (add to the standard purge list): pop "refsense", "engine2" too.
+
+### refsense.py (the reference side)
+- digitize(source, threshold=0.5, flip_x=False) -> sub-pixel silhouette dict
+  (pixel units) from an image path or bpy image. Alpha wins; else border-
+  sampled background. FRONT-photo convention matches model FRONT (+u = screen
+  right = subject's left).
+- preview(dig) -> ASCII of what the digitizer saw. GATE: verify this looks
+  like the subject BEFORE trusting any comparison.
+- rasterize(sil, px) -> synthetic grayscale from known geometry (calibration).
+
+### engine2.py (the pipeline)
+- compare(ref_dig, view, frame, rows=128, K=96) -> THE entry point:
+  registration solved -> 96-row sub-pixel signed error field -> clusters
+  above a per-row MEASURED floor = the distinctions (generated, not
+  eyeballed) -> prescriptions (owning stashed parts + world-unit magnitudes
+  + direction). masterwork == True when zero clusters clear the floor.
+- verify_pass(ref_dig, pre_compare_result, ...) -> same-field re-measure:
+  matched cluster deltas, new clusters, resolved, registration drift.
+- overlay(model_canon, ref_canon) -> ASCII '#'/'M'/'R' direct comparison.
+- canonicalize / resample / error_field / floor2 / prescribe -> the organs,
+  callable separately.
+
+### v2 doctrine
+- The reference is re-measured every loop (digitize is cheap); constants are
+  never cached (honesty-audit lesson).
+- The floor is a FIELD: tight on smooth rows (~0.009 canonical / ~0.016
+  world on boy_v2), honestly loose at hair crevices (p90 ~0.041). A
+  distinction below its row's floor is noise.
+- Calibration gate passed 2026-07-05: model-vs-own-rasterization returns
+  masterwork=True, pipeline error 0.0064 canonical max, overlay mismatch 0.1%.
+- v1 stays the substrate: eye/senses unchanged; occupancy/grid_diff still the
+  tool for interior (non-silhouette) features v2 cannot see.
