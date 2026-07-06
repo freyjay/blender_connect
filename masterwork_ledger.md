@@ -197,3 +197,31 @@ total certainty (impossible against a photo), confirmed size/thickness
 tracking to 4 decimals, and quantified (rather than guessed at) where a
 simplifying depth model breaks down. This is the calibration the boy-model
 work has been missing a foundation under.
+
+## Cold-build test v3 (post ground-truth engine calibration)
+Same exercise as the v1->v2 test, repeated now that the ENGINE itself has been
+calibrated against ground truth (bisection bug fixed, occlusion-blindness fixed,
+mesh_mind attribution understood, regression-ruler contamination understood).
+
+Built fresh from canon values + three structural fixes applied from birth
+(not patched later): neck as a stretched sphere (no cylinder cap-rim), temple
+hair coverage included in the generation rule, hero spikes born in standing
+mode. Corrective iterations needed this pass:
+
+1. First "ear-safe" W measurement (z=-0.55, below ears) gave nonsense ratios
+   (0.53/0.32/0.80 vs 0.43/0.26/0.71) -- caught BEFORE acting: realized this
+   changed which geometric quantity was being measured, not fixed a bug.
+   Corrected to eye-level (ear-inclusive), matching how the original targets
+   were derived from the photo in the first place. Result: 0.389/0.232/0.799
+   -- close on 2 of 3, one real residual (jaw/cheek).
+2. Jaw narrow attempt: ZERO effect (same post-fusion attribution trap as two
+   rounds ago). Checked stashed bounding boxes instead of guessing again:
+   4 parts overlap at that height (Cranium/Face/Jaw/LipUp), Face is the
+   larger contributor. Narrowed Face instead: 0.799 -> 0.753 (target 0.71).
+   Eye span/mouth unaffected (no regression).
+
+Final: skin 1 island / 0 non-manifold throughout. Turntable continuity_ok,
+max jump 0.204. Two real, correctly-diagnosed corrections needed (vs v1's
+~10 and v2's multi-bug journey through false leads). The engine calibration
+paid for itself: no wasted loops chasing instrument lies this time, only
+genuine residual geometry, found and fixed efficiently.
