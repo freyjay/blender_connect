@@ -41,3 +41,15 @@ good ratios) while being a solid cylinder -- no cavity. Human audit caught it.
 cavity_probe was born: 0.0 depth before, 1.88 deep / 2.93 units3 after boolean
 carve. Also: edges mode showed a disc, not a ring -- same-object depth cliffs
 are invisible to object-boundary edges; depth mode is the interior sense.
+
+## Interpretation-engine lessons (boy head, 6-loop audit)
+1. Pod/scale systems need TWO orientation modes: LYING (long axis tangent,
+   flowing mass) and STANDING (long axis along outward normal + lean, hero
+   spikes). Tangent projection mathematically annihilates 'up' at the crown --
+   two vetoes proved no tangent flow can make a spike.
+2. shade mode is COLORBLIND: it encodes normal-facing geometry. Color-role
+   features (iris, pupil) verify via id mode (per-cell ownership), never shade.
+3. Audit facial features as an ENSEMBLE: five features 0.11-0.13 low was ONE
+   error (underestimated cartoon cranium; eyes belong at vertical middle).
+   Coordinated lift fixed all five in one edit: 0.50/0.63/0.38/0.25/0.49.
+4. Passing metrics get NO adjustment (profile nose passed loop 1 untouched).
